@@ -1,9 +1,13 @@
+//STD LIBRARY
 #include <fstream>
 #include <iostream>
 #include <sstream>
+
+//OPENGL STUFF
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+//MY INCLUDES
 #include "IndexBufferObject.h"
 #include "ShaderProgram.h"
 #include "VertexArrayObject.h"
