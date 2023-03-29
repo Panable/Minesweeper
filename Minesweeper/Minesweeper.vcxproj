@@ -19,12 +19,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\IndexBufferObject.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\VertexBufferObject.cpp" />
+    <ClCompile Include="src\VertexArrayObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\basic\fragment.shader" />
     <None Include="res\shaders\basic\vertex.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\IndexBufferObject.h" />
+    <ClInclude Include="src\VertexBufferObject.h" />
+    <ClInclude Include="src\VertexArrayObject.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

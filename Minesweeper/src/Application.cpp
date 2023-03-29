@@ -4,6 +4,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "IndexBufferObject.h"
+#include "VertexArrayObject.h"
+#include "VertexBufferObject.h"
+
 //
 std::string LoadShader(const char* path)
 {
@@ -90,68 +94,6 @@ unsigned int InitializeShader()
     return shaderProgram;
 }
 
-unsigned int GenerateVAO()
-{
-    //vertices of our triangle
-    float vertices[] =
-    {
-        //x     y       z     r     g   b
-        ////
-        //COORDINATES     |     COLOR  
-    	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //bottom - left
-        0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// bottom - right
-        -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, //top
-        0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f
-    };
-
-    unsigned int indices[] =
-    {
-        0, 1, 2,
-        1, 2,3
-    };
-
-
-    //VBO is just data
-
-    //VAO has the VBO inside it, but it also defines how the data is laid out
-
-    unsigned int VBO, VAO, EBO; //object 'ids'. These are the references used to bind these
-
-    //Generate the 'id's for the VBO and VAO and stores them in the variables defined above
-    //What this does is find an unused id then assigns them sort of like PK in sql
-	glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO); //attaches the VAO to the gpu
-	glBindBuffer(GL_ARRAY_BUFFER, VBO); //attaches the VBO to the gpu
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-    //NOTE: WHEN THE VBO IS BOUND IT IS AUTOMATICALLY ASSOCIATED WITH THE VAO AND NOW
-    //THEY ARE LINKED
-
-    //pushes data to the vbo object on the GPU
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    //GL_STATIC_DRAW -> vertices selected once drawn many
-    //GL_DYNAMIC -> vertices changed a lot drawn a lot
-
-    //defines the layout of the VBO (STORED ON THE VAO) 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-
-    //THIS ENABLES THE ATTRIB POINTER THINGS ABOVE ON THE VAO. DON'T FORGET TO DO THIS FOR EACH.
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-    //UNBIND EVERYTHING
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
-    glBindVertexArray(0);
-
-	return VAO; //RETURN THE VAO (id of the VAO) to be used by the application later
-}
-
 int main()
 {
 
@@ -184,11 +126,40 @@ int main()
     std::cout << glGetString(GL_VERSION) << std:: endl;
 
     unsigned int shaderProgram = InitializeShader();
-    unsigned int VAO = GenerateVAO();
-    std::cout << VAO << std::endl;
 
-    // render loop
-    // -----------
+    //VAO GENERATION
+
+    float vertices[] =
+    {
+        //x     y       z     r     g   b
+        ////
+        //COORDINATES     |     COLOR  
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //bottom - left
+        0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// bottom - right
+        -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, //top
+        0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f
+    };
+
+    unsigned int indices[] =
+    {
+        0, 1, 2,
+        1, 2,3
+    };
+
+    VertexArrayObject VAO1;
+    VAO1.Bind();
+
+	VertexBufferObject VBO1(vertices, sizeof(vertices));
+    IndexBufferObject IBO1(indices, sizeof(indices));
+
+	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+    VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+	VBO1.Unbind();
+    VAO1.Unbind();
+    IBO1.Unbind();
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
     while (!glfwWindowShouldClose(window))
     {
         // input
@@ -201,7 +172,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
+        VAO1.Bind();
 
         //params 1: what type of shape to draw
         //params 2: what vertex in the array should we start with
@@ -219,6 +190,47 @@ int main()
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
+}
+
+inline VertexArrayObject GenerateVAO()
+{
+	float vertices[] =
+	{
+		//x     y       z     r     g   b
+		////
+		//COORDINATES     |     COLOR  
+		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //bottom - left
+		0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// bottom - right
+		-0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, //top
+		0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f
+	};
+
+	unsigned int indices[] =
+	{
+		0, 1, 2,
+		1, 2,3
+	};
+
+
+
+
+	unsigned int EBO;
+
+	VertexArrayObject VAO1;
+	VAO1.Bind();
+	VertexBufferObject VBO1(vertices, sizeof(vertices));
+
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+	VBO1.Unbind();
+	VAO1.Unbind();
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
