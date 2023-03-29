@@ -101,33 +101,38 @@ unsigned int GenerateVAO()
     	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //bottom - left
         0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// bottom - right
         -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, //top
-
-        - 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-        0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
         0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f
     };
 
+    unsigned int indices[] =
+    {
+        0, 1, 2,
+        1, 2,3
+    };
 
 
     //VBO is just data
 
     //VAO has the VBO inside it, but it also defines how the data is laid out
 
-    unsigned int VBO, VAO; //object 'ids'. These are the references used to bind these
+    unsigned int VBO, VAO, EBO; //object 'ids'. These are the references used to bind these
 
     //Generate the 'id's for the VBO and VAO and stores them in the variables defined above
     //What this does is find an unused id then assigns them sort of like PK in sql
 	glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO); //attaches the VAO to the gpu
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); //attaches the VBO to the gpu
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
     //NOTE: WHEN THE VBO IS BOUND IT IS AUTOMATICALLY ASSOCIATED WITH THE VAO AND NOW
     //THEY ARE LINKED
 
     //pushes data to the vbo object on the GPU
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     //GL_STATIC_DRAW -> vertices selected once drawn many
     //GL_DYNAMIC -> vertices changed a lot drawn a lot
@@ -202,7 +207,7 @@ int main()
         //params 2: what vertex in the array should we start with
         //params 3: how many vertices are we rendering?
         glDrawArrays(GL_TRIANGLES, 0, 3);
-
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
