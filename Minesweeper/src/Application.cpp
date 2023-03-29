@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-
+//
 std::string LoadShader(const char* path)
 {
     std::ifstream shaderFile(path);
@@ -20,9 +20,10 @@ void processInput(GLFWwindow* window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
+//
 unsigned int InitializeShader()
 {
+    //reading file into string
     std::string vertexShaderString, fragmentShaderString;
 
     vertexShaderString = LoadShader("res/shaders/basic/vertex.shader");
@@ -31,6 +32,7 @@ unsigned int InitializeShader()
     const char* vertexShaderCode = vertexShaderString.c_str();
 	const char* fragmentShaderCode = fragmentShaderString.c_str();
 
+    //'id'
     unsigned int vertexShader, fragmentShader;
 
     //Create shaders
@@ -45,7 +47,7 @@ unsigned int InitializeShader()
     glShaderSource(fragmentShader, 1, &fragmentShaderCode, NULL);
     glCompileShader(fragmentShader);
 
-
+    //ERROR TEST THE SHADER
     int  success;
     char infoLog[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
@@ -56,6 +58,7 @@ unsigned int InitializeShader()
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
+    //ERROR TEST THE SHADER
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success)
     {
@@ -72,57 +75,86 @@ unsigned int InitializeShader()
 	glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
 
+    //ERROR TEST THE SHADER
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
+
+    //Delete shaders (they are used in shader program)
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+    
     return shaderProgram;
-
 }
 
 unsigned int GenerateVAO()
 {
+    //vertices of our triangle
     float vertices[] =
     {
-    	-0.5f, -0.5f, 0.0f,
-        0.5f,  -0.5f, 0.0f,
-        0.0f,  0.5f, 0.0f
+        //x     y       z     r     g   b
+        ////
+        //COORDINATES     |     COLOR  
+    	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //bottom - left
+        0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// bottom - right
+        -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, //top
+
+        - 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+        0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f
     };
 
-    unsigned int VBO, VAO;
-    glGenVertexArrays(1, &VAO);
+
+
+    //VBO is just data
+
+    //VAO has the VBO inside it, but it also defines how the data is laid out
+
+    unsigned int VBO, VAO; //object 'ids'. These are the references used to bind these
+
+    //Generate the 'id's for the VBO and VAO and stores them in the variables defined above
+    //What this does is find an unused id then assigns them sort of like PK in sql
+	glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 
-    glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindVertexArray(VAO); //attaches the VAO to the gpu
+	glBindBuffer(GL_ARRAY_BUFFER, VBO); //attaches the VBO to the gpu
 
+    //NOTE: WHEN THE VBO IS BOUND IT IS AUTOMATICALLY ASSOCIATED WITH THE VAO AND NOW
+    //THEY ARE LINKED
 
+    //pushes data to the vbo object on the GPU
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    //GL_STATIC_DRAW -> vertices selected once drawn many
+    //GL_DYNAMIC -> vertices changed a lot drawn a lot
 
+    //defines the layout of the VBO (STORED ON THE VAO) 
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    //THIS ENABLES THE ATTRIB POINTER THINGS ABOVE ON THE VAO. DON'T FORGET TO DO THIS FOR EACH.
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glEnableVertexAttribArray(1);
+
+    //UNBIND EVERYTHING
+    glBindBuffer(GL_ARRAY_BUFFER, 0); 
     glBindVertexArray(0);
-    return VAO;
+
+	return VAO; //RETURN THE VAO (id of the VAO) to be used by the application later
 }
 
 int main()
 {
-    // glfw: initialize and configure
-    // ------------------------------
+
+    //Initialize GLFW and set opengl version
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
 
     // glfw window creation
     // --------------------
@@ -165,6 +197,10 @@ int main()
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
+
+        //params 1: what type of shape to draw
+        //params 2: what vertex in the array should we start with
+        //params 3: how many vertices are we rendering?
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
 
