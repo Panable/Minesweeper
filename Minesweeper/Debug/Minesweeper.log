@@ -1,7 +1,2 @@
-﻿  IndexBufferObject.cpp
-  Application.cpp
-  VertexBufferObject.cpp
-  VertexArrayObject.cpp
-  Generating Code...
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+﻿  VertexBufferObject.cpp
   Minesweeper.vcxproj -> C:\Users\dhanr\Documents\Minesweeper\Debug\Minesweeper.exe

@@ -3,13 +3,13 @@
 VertexBufferObject::VertexBufferObject(const void* data, unsigned int size)
 {
 	glGenBuffers(1, &m_Id);
-	this->Bind();
+	Bind();
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 }
 
 VertexBufferObject::~VertexBufferObject()
 {
-	this->Delete();
+	Delete();
 }
 
 void VertexBufferObject::Bind() const

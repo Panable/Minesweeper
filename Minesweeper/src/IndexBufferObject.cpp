@@ -5,7 +5,7 @@ void IndexBufferObject::Delete() const
 	glDeleteBuffers(1, &m_Id);
 }
 
-IndexBufferObject::IndexBufferObject(const void* data, unsigned size)
+IndexBufferObject::IndexBufferObject(const void* data, const unsigned int size)
 {
 	glGenBuffers(1, &m_Id);
 	this->Bind();

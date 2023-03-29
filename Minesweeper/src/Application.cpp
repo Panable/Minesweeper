@@ -5,18 +5,10 @@
 #include <GLFW/glfw3.h>
 
 #include "IndexBufferObject.h"
+#include "ShaderProgram.h"
 #include "VertexArrayObject.h"
 #include "VertexBufferObject.h"
 
-//
-std::string LoadShader(const char* path)
-{
-    std::ifstream shaderFile(path);
-    std::stringstream shaderStream;
-    shaderStream << shaderFile.rdbuf();
-    shaderFile.close();
-    return shaderStream.str();
-}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -24,75 +16,6 @@ void processInput(GLFWwindow* window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-//
-unsigned int InitializeShader()
-{
-    //reading file into string
-    std::string vertexShaderString, fragmentShaderString;
-
-    vertexShaderString = LoadShader("res/shaders/basic/vertex.shader");
-    fragmentShaderString = LoadShader("res/shaders/basic/fragment.shader");
-
-    const char* vertexShaderCode = vertexShaderString.c_str();
-	const char* fragmentShaderCode = fragmentShaderString.c_str();
-
-    //'id'
-    unsigned int vertexShader, fragmentShader;
-
-    //Create shaders
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-
-    //Attach Shader code to shaders.
-    glShaderSource(vertexShader, 1, &vertexShaderCode, NULL);
-    glCompileShader(vertexShader);
-
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderCode, NULL);
-    glCompileShader(fragmentShader);
-
-    //ERROR TEST THE SHADER
-    int  success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    //ERROR TEST THE SHADER
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    //create shader program
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-
-    //attach shaders to shader program
-    glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    //ERROR TEST THE SHADER
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    //Delete shaders (they are used in shader program)
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    
-    return shaderProgram;
-}
 
 int main()
 {
@@ -125,10 +48,7 @@ int main()
 
     std::cout << glGetString(GL_VERSION) << std:: endl;
 
-    unsigned int shaderProgram = InitializeShader();
-
-    //VAO GENERATION
-
+    //DATA
     float vertices[] =
     {
         //x     y       z     r     g   b
@@ -146,19 +66,24 @@ int main()
         1, 2,3
     };
 
-    VertexArrayObject VAO1;
+    //VAO GENERATION
+    const VertexArrayObject VAO1;
     VAO1.Bind();
 
-	VertexBufferObject VBO1(vertices, sizeof(vertices));
-    IndexBufferObject IBO1(indices, sizeof(indices));
+    const VertexBufferObject VBO1(vertices, sizeof(vertices));
+    const IndexBufferObject IBO1(indices, sizeof(indices));
 
+    //COORDS
 	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
-    VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 
 	VBO1.Unbind();
     VAO1.Unbind();
     IBO1.Unbind();
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    //SHADER GENERATION
+    const ShaderProgram shader1("res/shaders/basic/vertex.shader", "res/shaders/basic/fragment.shader");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -171,7 +96,7 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        shader1.Activate();
         VAO1.Bind();
 
         //params 1: what type of shape to draw
