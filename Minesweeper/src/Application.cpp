@@ -64,6 +64,8 @@ int main()
         0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f
     };
 
+    float* verPointer = vertices;
+
     unsigned int indices[] =
     {
         0, 1, 2,
@@ -121,47 +123,6 @@ int main()
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
-}
-
-inline VertexArrayObject GenerateVAO()
-{
-	float vertices[] =
-	{
-		//x     y       z     r     g   b
-		////
-		//COORDINATES     |     COLOR  
-		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //bottom - left
-		0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// bottom - right
-		-0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, //top
-		0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f
-	};
-
-	unsigned int indices[] =
-	{
-		0, 1, 2,
-		1, 2,3
-	};
-
-
-
-
-	unsigned int EBO;
-
-	VertexArrayObject VAO1;
-	VAO1.Bind();
-	VertexBufferObject VBO1(vertices, sizeof(vertices));
-
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
-	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-
-	VBO1.Unbind();
-	VAO1.Unbind();
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
