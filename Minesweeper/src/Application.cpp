@@ -88,6 +88,7 @@ int main()
 
     //SHADER GENERATION
     const ShaderProgram shader1("res/shaders/basic/vertex.shader", "res/shaders/basic/fragment.shader");
+    const ShaderProgram shader2("res/shaders/basic/vertex.shader", "res/shaders/basic/fragmentUniform.shader");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -99,10 +100,11 @@ int main()
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        shader1.Activate();
+        float timeValue = glfwGetTime();
+        float greenValue = sin(timeValue) / 2.0f + 0.5f;
+        shader2.Activate();
+        shader2.SetVector4f("ourColor", glm::vec4(1.0f, greenValue, 0.0f, 1.0f));
         VAO1.Bind();
-
         //params 1: what type of shape to draw
         //params 2: what vertex in the array should we start with
         //params 3: how many vertices are we rendering?

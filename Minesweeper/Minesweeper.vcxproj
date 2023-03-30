@@ -23,18 +23,47 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\ShaderProgram.cpp" />
+    <ClCompile Include="src\vendor\stb_image\stb_image.cpp" />
     <ClCompile Include="src\VertexBufferObject.cpp" />
     <ClCompile Include="src\VertexArrayObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\basic\fragment.shader" />
+    <None Include="res\shaders\basic\fragmentUniform.shader" />
     <None Include="res\shaders\basic\vertex.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\IndexBufferObject.h" />
     <ClInclude Include="src\ShaderProgram.h" />
+    <ClInclude Include="src\vendor\glm\common.hpp" />
+    <ClInclude Include="src\vendor\glm\exponential.hpp" />
+    <ClInclude Include="src\vendor\glm\ext.hpp" />
+    <ClInclude Include="src\vendor\glm\fwd.hpp" />
+    <ClInclude Include="src\vendor\glm\geometric.hpp" />
+    <ClInclude Include="src\vendor\glm\glm.hpp" />
+    <ClInclude Include="src\vendor\glm\integer.hpp" />
+    <ClInclude Include="src\vendor\glm\mat2x2.hpp" />
+    <ClInclude Include="src\vendor\glm\mat2x3.hpp" />
+    <ClInclude Include="src\vendor\glm\mat2x4.hpp" />
+    <ClInclude Include="src\vendor\glm\mat3x2.hpp" />
+    <ClInclude Include="src\vendor\glm\mat3x3.hpp" />
+    <ClInclude Include="src\vendor\glm\mat3x4.hpp" />
+    <ClInclude Include="src\vendor\glm\mat4x2.hpp" />
+    <ClInclude Include="src\vendor\glm\mat4x3.hpp" />
+    <ClInclude Include="src\vendor\glm\mat4x4.hpp" />
+    <ClInclude Include="src\vendor\glm\matrix.hpp" />
+    <ClInclude Include="src\vendor\glm\packing.hpp" />
+    <ClInclude Include="src\vendor\glm\trigonometric.hpp" />
+    <ClInclude Include="src\vendor\glm\vec2.hpp" />
+    <ClInclude Include="src\vendor\glm\vec3.hpp" />
+    <ClInclude Include="src\vendor\glm\vec4.hpp" />
+    <ClInclude Include="src\vendor\glm\vector_relational.hpp" />
+    <ClInclude Include="src\vendor\stb_image\stb_image.h" />
     <ClInclude Include="src\VertexBufferObject.h" />
     <ClInclude Include="src\VertexArrayObject.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\vendor\glm\CMakeLists.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -106,7 +135,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src/vendor;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

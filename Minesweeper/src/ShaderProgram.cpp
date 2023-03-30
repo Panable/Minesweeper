@@ -42,6 +42,12 @@ ShaderProgram::ShaderProgram(const char* vertexShaderFilePath, const char* fragm
 	glDeleteShader(fragmentShader);
 }
 
+void ShaderProgram::SetVector4f(const char* name, const glm::vec4 &value) const
+{
+	const int location = glGetUniformLocation(m_Id, name);
+	glUniform4f(location, value.x, value.y, value.z, value.w);
+}
+
 ShaderProgram::~ShaderProgram()
 {
 	this->Delete();
