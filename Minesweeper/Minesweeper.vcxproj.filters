@@ -127,8 +127,22 @@
     <ClInclude Include="src\vendor\stb_image\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\vendor\Debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\vendor\glm\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\texture\brick.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\wall.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\texture\pop_cat.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

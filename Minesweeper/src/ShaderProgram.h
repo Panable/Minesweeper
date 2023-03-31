@@ -17,6 +17,7 @@ public:
 	~ShaderProgram();
 	void Activate() const;
 	void SetVector4f(const char* name, const glm::vec4& value) const;
+	void Set1i(const char* name, int value) const;
 private:
 	void CompileErrors(unsigned int shader, const char* type) const;
 	std::string GetFileContents(const char* path) const;

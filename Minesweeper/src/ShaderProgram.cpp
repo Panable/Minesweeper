@@ -48,6 +48,14 @@ void ShaderProgram::SetVector4f(const char* name, const glm::vec4 &value) const
 	glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
+void ShaderProgram::Set1i(const char* name, int value) const
+{
+	const int location = glGetUniformLocation(m_Id, name);
+	if (location == -1)
+		std::cout << "ERROR NO UNIFORM WITH NAME " << name << std::endl;
+	glUniform1i(location, value);
+}
+
 ShaderProgram::~ShaderProgram()
 {
 	this->Delete();

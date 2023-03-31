@@ -35,6 +35,7 @@
   <ItemGroup>
     <ClInclude Include="src\IndexBufferObject.h" />
     <ClInclude Include="src\ShaderProgram.h" />
+    <ClInclude Include="src\vendor\Debug.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
     <ClInclude Include="src\vendor\glm\exponential.hpp" />
     <ClInclude Include="src\vendor\glm\ext.hpp" />
@@ -64,6 +65,11 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\vendor\glm\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\texture\brick.png" />
+    <Image Include="res\texture\pop_cat.png" />
+    <Image Include="res\texture\wall.jpg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

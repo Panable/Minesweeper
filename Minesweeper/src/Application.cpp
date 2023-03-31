@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-
+#include <Debug.h>
 //OPENGL STUFF
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -12,7 +12,7 @@
 #include "ShaderProgram.h"
 #include "VertexArrayObject.h"
 #include "VertexBufferObject.h"
-
+#include <stb_image/stb_image.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -57,18 +57,19 @@ int main()
     {
         //x     y       z     r     g   b
         ////
-        //COORDINATES     |     COLOR  
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //bottom - left
-        0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// bottom - right
-        -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, //top
-        0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f
+        //COORDINATES       |     COLOR           | TEX COORD
+        -0.5f,  -0.5f,  0.0f,  1.0f, 0.0f, 0.0f,   0.0f, 0.0f,        //bottom - left
+         0.5f,  -0.5f,  0.0f,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f,          // bottom - right
+        -0.5f,   0.5f,  0.0f,  0.0f, 0.0f, 1.0f,   0.0f, 1.0f,          //top - left
+         0.5f,   0.5f,  0.0f,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f            //top -  right
     };
 
     unsigned int indices[] =
     {
         0, 1, 2,
-        1, 2,3
+        1, 2, 3
     };
+
 
     //VAO GENERATION
     const VertexArrayObject VAO1;
@@ -78,17 +79,60 @@ int main()
     const IndexBufferObject IBO1(indices, sizeof(indices));
 
     //COORDS
-	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+    const int numCoords = 3;
+    const int numColors = 3;
+    const int numTextCoords = 2;
+    const int stride = (numCoords + numColors + numTextCoords) * sizeof(float);
 
-	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    VAO1.LinkAttrib(VBO1, 0, numCoords, GL_FLOAT, stride, (void*)0);
 
-	VBO1.Unbind();
+    VAO1.LinkAttrib(VBO1, 1, numColors, GL_FLOAT, stride, (void*)(numCoords * sizeof(float)));
+
+    VAO1.LinkAttrib(VBO1, 2, numTextCoords, GL_FLOAT, stride, (void*)((numCoords + numColors) * sizeof(float)));
+
+    VBO1.Unbind();
     VAO1.Unbind();
     IBO1.Unbind();
+
+    //TEXTURE GENERATION
+
+
+    const char* filePath ="res/texture/brick.png";
+    int width, height, colorChannel;
+
+    unsigned char* data = stbi_load(filePath, &width, &height, &colorChannel, 4);
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    if (data)
+    {
+	    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	    glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+	    std::cout << "ERROR LOADING TEXTURE AT " << filePath << std::endl;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    stbi_image_free(data);
 
     //SHADER GENERATION
     const ShaderProgram shader1("res/shaders/basic/vertex.shader", "res/shaders/basic/fragment.shader");
     const ShaderProgram shader2("res/shaders/basic/vertex.shader", "res/shaders/basic/fragmentUniform.shader");
+
+    shader2.Activate();
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    shader2.Set1i("ourTexture", 0);
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -100,15 +144,10 @@ int main()
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        float timeValue = glfwGetTime();
-        float greenValue = sin(timeValue) / 2.0f + 0.5f;
+
+
         shader2.Activate();
-        shader2.SetVector4f("ourColor", glm::vec4(1.0f, greenValue, 0.0f, 1.0f));
         VAO1.Bind();
-        //params 1: what type of shape to draw
-        //params 2: what vertex in the array should we start with
-        //params 3: how many vertices are we rendering?
-        glDrawArrays(GL_TRIANGLES, 0, 3);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

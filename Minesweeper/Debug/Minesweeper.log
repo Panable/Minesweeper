@@ -1,3 +1,2 @@
 ﻿  Application.cpp
-C:\Users\Dan\source\repos\Minesweeper\Minesweeper\src\Application.cpp(106,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  Minesweeper.vcxproj -> C:\Users\Dan\source\repos\Minesweeper\Debug\Minesweeper.exe
+  Minesweeper.vcxproj -> C:\Users\dhanr\Documents\Minesweeper\Debug\Minesweeper.exe
